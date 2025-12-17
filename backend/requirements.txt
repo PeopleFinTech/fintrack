@@ -1,0 +1,12 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+psycopg2-binary
+python-dotenv
+passlib
+bcrypt
+jwt
+python-multipart
+python-dateutil
+python-json-logger
+python-json-logger
