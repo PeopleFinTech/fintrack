@@ -11,7 +11,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 
 @api_router.get("/health")
 async def health_check():
-    return {"status": "ok", "database_url": DATABASE_URL}
+    return {"status": "ok"}
 
 
 class Expense(BaseModel):
