@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Form, Depends
 from sqlmodel import Session
 from db import get_session
-from controllers.Auth import AuthController
-from models.user import User
+from controllers import AuthController
+from models import User
 
 router = APIRouter(prefix="/auth")
 

@@ -3,6 +3,8 @@ from models import User
 from fastapi import HTTPException
 from dotenv import load_dotenv
 import os
+import jwt
+from datetime import datetime
 
 load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY")
@@ -30,14 +32,25 @@ class AuthController:
         return user.generate_token()
     
     @staticmethod
-    def check_token(token: str)-> User:
-        id = jwt.decode(token, SECRET_KEY, algorithms=["HS256"]).get("sub")
-        exp = jwt.decode(token, SECRET_KEY, algorithms=["HS256"]).get("exp")
-        if not id or not exp:
+    def check_token(session: Session, token: str)-> User:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        user_id = payload.get("sub")
+        exp_ts = payload.get("exp")
+
+        if not user_id or not exp_ts:
             raise HTTPException(status_code=401, detail="Invalid credentials")
-        if exp < datetime.now():
+
+        exp_dt = datetime.utcfromtimestamp(exp_ts)
+        now = datetime.utcnow()
+
+        if exp_dt < now:
             raise HTTPException(status_code=401, detail="Token expired")
-        user = User.filter(id=id).first()
+
+        user = session.exec(
+            select(User)
+            .where(User.id == user_id)
+        ).first()
         if not user:
             raise HTTPException(status_code=401, detail="No user found")
+
         return user
