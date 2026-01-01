@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Form, Depends, Header, HTTPException
+from fastapi import APIRouter, Form, Depends, Cookie, HTTPException
+from typing import Annotated
 from sqlmodel import Session
 from db import get_session
 from controllers import AuthController, ExpenseController
@@ -11,18 +12,17 @@ def add(
     name:str = Form(...),
     amount: float = Form(...),
     category: str = Form(...),
-    authorization: str = Header(...),
+    access_token: Annotated[str | None, Cookie()] = None,
     session: Session = Depends(get_session)
 ):
     try:
-        scheme, token = authorization.split()
-        if scheme.lower() != "bearer":
-            raise HTTPException(status_code=405, detail="Invalid auth scheme")
+        if not access_token:
+            raise HTTPException(status_code=401, detail="Unauthorized")
         authController = AuthController()
-        user = authController.check_token(session, token)
+        user = authController.check_token(session, access_token)
     except Exception as e:
-        print(f"JWT decode error: {e}")  # prints to container log
-        raise HTTPException(status_code=401, detail="Invalid authorization header")
+        print(f"JWT decode error: {e}")
+        raise HTTPException(status_code=401, detail="Unauthorized")
 
     expenseController= ExpenseController()
     
@@ -34,18 +34,17 @@ def update(
     name:str = Form(...),
     amount: float = Form(...),
     category: str = Form(...),
-    authorization: str = Header(...),
+    access_token: Annotated[str | None, Cookie()] = None,
     session: Session = Depends(get_session)
 ):
     try:
-        scheme, token = authorization.split()
-        if scheme.lower() != "bearer":
-            raise HTTPException(status_code=405, detail="Invalid auth scheme")
+        if not access_token:
+            raise HTTPException(status_code=401, detail="Unauthorized")
         authController = AuthController()
-        user = authController.check_token(session, token)
+        user = authController.check_token(session, access_token)
     except Exception as e:
-        print(f"JWT decode error: {e}")  # prints to container log
-        raise HTTPException(status_code=401, detail="Invalid authorization header")
+        print(f"JWT decode error: {e}")
+        raise HTTPException(status_code=401, detail="Unauthorized")
 
     expenseController= ExpenseController()
     
@@ -54,18 +53,17 @@ def update(
 @router.delete('/{id}')
 def update(
     id: int,
-    authorization: str = Header(...),
+    access_token: Annotated[str | None, Cookie()] = None,
     session: Session = Depends(get_session)
 ):
     try:
-        scheme, token = authorization.split()
-        if scheme.lower() != "bearer":
-            raise HTTPException(status_code=405, detail="Invalid auth scheme")
+        if not access_token:
+            raise HTTPException(status_code=401, detail="Unauthorized")
         authController = AuthController()
-        user = authController.check_token(session, token)
+        user = authController.check_token(session, access_token)
     except Exception as e:
-        print(f"JWT decode error: {e}")  # prints to container log
-        raise HTTPException(status_code=401, detail="Invalid authorization header")
+        print(f"JWT decode error: {e}")
+        raise HTTPException(status_code=401, detail="Unauthorized")
 
     expenseController= ExpenseController()
     
@@ -73,18 +71,17 @@ def update(
 
 @router.get('/all')
 def all(
-    authorization: str = Header(...),
+    access_token: Annotated[str | None, Cookie()] = None,
     session: Session = Depends(get_session)
 ):
     try:
-        scheme, token = authorization.split()
-        if scheme.lower() != "bearer":
-            raise HTTPException(status_code=401, detail="Invalid auth scheme")
+        if not access_token:
+            raise HTTPException(status_code=401, detail="Unauthorized")
         authController = AuthController()
-        user = authController.check_token(session, token)
+        user = authController.check_token(session, access_token)
     except Exception as e:
         print(f"JWT decode error: {e}")
-        raise HTTPException(status_code=401, detail="Invalid authorization header")
+        raise HTTPException(status_code=401, detail="Unauthorized")
     
     expenseController= ExpenseController()
     expenses = expenseController.all(session, user.id)

@@ -11,7 +11,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 
 class AuthController:
     @staticmethod
-    def register(session: Session, email: str, name: str, password: str) -> User:
+    def register(session: Session, email: str, name: str, password: str) -> dict:
         # Check if user exists
         existing = session.exec(select(User).where(User.email == email)).first()
         if existing:
@@ -22,14 +22,20 @@ class AuthController:
         session.add(user)
         session.commit()
         session.refresh(user)
-        return user
+        return {
+            "user": user,
+            "token": user.generate_token()
+            }
 
     @staticmethod
-    def login(session: Session, email: str, password: str) -> str:
+    def login(session: Session, email: str, password: str) -> dict:
         user = session.exec(select(User).where(User.email == email)).first()
         if not user or not user.verify_password(password):
             raise HTTPException(status_code=401, detail="Invalid credentials")
-        return user.generate_token()
+        return {
+            "user": user,
+            "token": user.generate_token()
+            }
     
     @staticmethod
     def check_token(session: Session, token: str)-> User:
