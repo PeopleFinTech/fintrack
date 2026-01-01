@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { useDispatch } from "react-redux"
 import { setToken } from "../../../redux/slices/auth"
 
@@ -17,7 +17,7 @@ const loginSchema = z
 
 export default function LoginPage() {
     const dispatch = useDispatch()
-
+    const navigate = useNavigate()
     const {
         register,
         handleSubmit,
@@ -28,7 +28,6 @@ export default function LoginPage() {
     })
 
     const onSubmit = async (values) => {
-        console.log("LOGIN:", values)
         const { email, password } = values
         const formData = new FormData()
         formData.append("email", email)
@@ -49,14 +48,8 @@ export default function LoginPage() {
           return
     }
     console.log("LOGIN SUCCESS:", data)
-
-    const token = data?.access_token || data?.token
-    if (token) {
-        dispatch(setToken(token))
-    }
   
-    // redirect after login (React Router)
-    // navigate("/dashboard")
+    navigate("/dashboard")
   }
 
     return (

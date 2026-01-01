@@ -46,7 +46,7 @@ export default function RegisterPage() {
             body: formData,
         }).then(res => res.json())
             .then(data => {
-                navigate('/login')
+                navigate('/dashboard')
             }).catch(err => {
                 console.error("ERROR:", err)
             })
