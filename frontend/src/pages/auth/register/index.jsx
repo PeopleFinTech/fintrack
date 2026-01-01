@@ -2,6 +2,8 @@ import { z } from "zod"
 import { Link, useNavigate } from "react-router-dom"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useDispatch } from "react-redux"
+import { setEmail, setName } from "../../../redux/slices/auth"
 
 const registerSchema = z
     .object({
@@ -22,6 +24,7 @@ const registerSchema = z
     })
 
 export default function RegisterPage() {
+    const dispatch = useDispatch()
     const navigate = useNavigate()
     const {
         register,
@@ -32,9 +35,6 @@ export default function RegisterPage() {
         defaultValues: { email: "", password: "", confirmPassword: "", name: "" },
     })
     const onSubmit = async (values) => {
-        // values are valid here
-        console.log("REGISTER:", values)
-
         // Often you won't send confirmPassword to backend
         const { email, password ,name} = values
         const formData = new FormData()
@@ -46,6 +46,8 @@ export default function RegisterPage() {
             body: formData,
         }).then(res => res.json())
             .then(data => {
+                dispatch(setName(data?.name))
+                dispatch(setEmail(data?.email))
                 navigate('/dashboard')
             }).catch(err => {
                 console.error("ERROR:", err)

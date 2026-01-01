@@ -3,7 +3,7 @@ import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Link, useNavigate } from "react-router-dom"
 import { useDispatch } from "react-redux"
-import { setToken } from "../../../redux/slices/auth"
+import { setEmail, setName } from "../../../redux/slices/auth"
 
 const loginSchema = z
     .object({
@@ -47,7 +47,8 @@ export default function LoginPage() {
           setError("root", { message })
           return
     }
-    console.log("LOGIN SUCCESS:", data)
+    dispatch(setName(data?.name))
+    dispatch(setEmail(data?.email))
   
     navigate("/dashboard")
   }
