@@ -2,11 +2,10 @@ from fastapi import APIRouter, Form, Depends, Response, status, HTTPException, C
 from sqlmodel import Session
 from db import get_session
 from controllers import AuthController
-from models import User
 
 router = APIRouter(prefix="/auth")
 
-@router.post("/register", response_model=User)
+@router.post("/register")
 def register(
     email: str = Form(...),
     name: str = Form(...),

@@ -12,7 +12,7 @@ if ENVIRONMENT == "development":
     app.add_middleware(
         CORSMiddleware,
         allow_origins=[
-            "http://localhost:5437",
+            "http://localhost:5173",
             "http://localhost:80",
         ],
         allow_credentials=True,

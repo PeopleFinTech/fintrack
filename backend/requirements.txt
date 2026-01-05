@@ -11,3 +11,4 @@ bcrypt
 PyJWT
 passlib[bcrypt]
 cryptography
+pydantic>=2.0,<3.0

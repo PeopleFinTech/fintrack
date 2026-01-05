@@ -1,5 +1,6 @@
 from sqlmodel import Session, select
 from models import User
+from schemas import UserPublic
 from fastapi import HTTPException
 from dotenv import load_dotenv
 import os
@@ -23,7 +24,7 @@ class AuthController:
         session.commit()
         session.refresh(user)
         return {
-            "user": user,
+            "user": UserPublic.model_validate(user),
             "token": user.generate_token()
             }
 
@@ -33,7 +34,7 @@ class AuthController:
         if not user or not user.verify_password(password):
             raise HTTPException(status_code=401, detail="Invalid credentials")
         return {
-            "user": user,
+            "user": UserPublic.model_validate(user),
             "token": user.generate_token()
             }
     
